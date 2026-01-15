@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Orders</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; padding:20px; background: #f6f9fc;}
+    h1 { text-align:center; margin-bottom:20px; }
+    #orders { max-width:600px; margin:auto; background:white; padding:16px; border-radius:12px; box-shadow:0 6px 14px rgba(0,0,0,0.08);}
+    ul { list-style:none; padding-left:0; }
+    li { padding:6px 0; border-bottom:1px solid #eee; }
+    #total { font-weight:bold; margin-top:10px; text-align:right; }
+  </style>
+</head>
+<body>
+  <h1>Admin Orders</h1>
+  <div id="orders">
+    <p>No orders yet.</p>
+    <div id="total">Total: $0.00</div>
+  </div>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzOexGe2KdcPZKMAx99k3avssHDAJh_GtuNE6o-5tTwunafNJDGCKcDw84ovbAleSj/exec";
+    const ordersDiv = document.getElementById('orders');
+    const totalDiv = document.getElementById('total');
+
+    function fetchOrders() {
+      fetch(WEB_APP_URL)
+        .then(res => res.json())
+        .then(data => {
+          if (data.length === 0) {
+            ordersDiv.innerHTML = '<p>No orders yet.</p>';
+            totalDiv.textContent = 'Total: $0.00';
+            return;
+          }
+
+          let total = 0;
+          let html = '<ul>';
+          data.forEach(order => {
+            html += `<li>${order.item} - $${parseFloat(order.price).toFixed(2)} | ${order.name} | ${order.team} | ${order.class} | ${order.grade}</li>`;
+            total += parseFloat(order.price);
+          });
+          html += '</ul>';
+          ordersDiv.innerHTML = html;
+          totalDiv.textContent = `Total: $${total.toFixed(2)}`;
+        })
+        .catch(err => console.log(err));
+    }
+
+    setInterval(fetchOrders, 5000);
+    fetchOrders();
+  </script>
+</body>
+</html>
