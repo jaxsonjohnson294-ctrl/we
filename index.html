@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Worker Food Cart</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin:0; padding:20px; background: #f6f9fc;}
+    h1 { text-align:center; margin-bottom:20px; }
+    .products { max-width:500px; margin:auto; }
+    .product { background:#fff; display:flex; justify-content:space-between; padding:12px; margin-bottom:12px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.08);}
+    button { background:#4f46e5; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;}
+    button:hover { background:#4338ca; }
+    form { max-width:500px; margin:20px auto; display:flex; flex-direction:column; gap:10px;}
+    input { padding:8px; border-radius:6px; border:1px solid #ccc;}
+  </style>
+</head>
+<body>
+  <h1>Worker Food Cart</h1>
+
+  <div class="products" id="menu"></div>
+
+  <form id="userForm">
+    <input type="text" name="name" placeholder="Your Name" required />
+    <input type="text" name="team" placeholder="Team" required />
+    <input type="text" name="class" placeholder="Class" required />
+    <input type="number" name="grade" placeholder="Grade" required />
+  </form>
+
+  <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzOexGe2KdcPZKMAx99k3avssHDAJh_GtuNE6o-5tTwunafNJDGCKcDw84ovbAleSj/exec";
+    const menu = document.getElementById('menu');
+    const form = document.getElementById('userForm');
+
+    const items = [
+      { name: '💍 Ring Pop', price: 0.50 },
+      { name: '🔥 Takis', price: 1.00 },
+      { name: '🍬 Gum (single)', price: 0.25 },
+      { name: '📦 Gum (full pack)', price: 3.00 },
+      { name: '🌈 Skittles', price: 2.00 },
+      { name: '💥 Airheads Xtremes', price: 2.00 }
+    ];
+
+    function renderMenu() {
+      menu.innerHTML = '';
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `<span>${item.name} - $${item.price.toFixed(2)}</span>
+                         <button onclick='addToCart("${item.name}", ${item.price})'>Add to Cart</button>`;
+        menu.appendChild(div);
+      });
+    }
+
+    function addToCart(name, price) {
+      const data = {
+        name: form.name.value,
+        team: form.team.value,
+        class: form.class.value,
+        grade: form.grade.value,
+        item: name,
+        price: price
+      };
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(() => alert(`${name} added to cart!`))
+      .catch(err => alert('Error sending order: ' + err));
+    }
+
+    renderMenu();
+  </script>
+</body>
+</html>
